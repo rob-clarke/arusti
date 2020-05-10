@@ -1,0 +1,146 @@
+intra_line_extension = _{ ( "." | "'" | "`")+ }
+
+inter_line_extension = { ( "~" | "+" | "-" )+ }
+
+roll_angle = { ASCII_NONZERO_DIGIT ~ !( "j" ) }
+
+roll_separator = { "," | ";" }
+
+hesitation_type = { "2" | "4" | "8" }
+
+flick_spin_type = { "i"? ~ ( "f" | "s" ) }
+
+roll_type = { hesitation_type | flick_spin_type }
+
+roll_element = {
+    intra_line_extension?
+    ~ ( roll_angle ~ roll_type? | flick_spin_type )
+    }
+
+roll_set = {
+    roll_separator?
+    ~ intra_line_extension?
+    ~ roll_separator?
+    ~ roll_element
+    ~ ( intra_line_extension? ~ roll_separator ~ roll_element )*
+    ~ intra_line_extension?
+    }
+
+inner_roll_set = { "(" ~ roll_set ~ ")" }
+
+single_line = {
+    "i"? ~
+    ( "d" | "v" | "z" )
+    ~ !ASCII_ALPHA
+    }
+
+twin_line = {
+    "i"? ~
+    ( "t" | "k" | "zt" | "kz" )
+    ~ !ASCII_ALPHA
+    }
+
+loop_figure = {
+    (
+        ( "a" | "m" ) |
+        ( "i"? ~ ( "o" | "qo" | "dq" | "qq" ) )
+        )
+    ~ !ASCII_ALPHA
+    }
+
+loop_line_combo = {
+    "i"? ~ 
+    ( "g" | ( "r"? ~ ( "c" | "p" | "q" | "y"  ) ) )
+    ~ !ASCII_ALPHA
+    }
+
+double_loop = {
+    "i"? ~
+    ( "cc" | "rcc" )
+    ~ !ASCII_ALPHA
+    }
+
+humpty = {
+    "i"? ~
+    ( "b" | "pb" | "bb" | "pbb" | "db" | "rdb" )
+    ~ !ASCII_ALPHA
+    }
+
+hammerhead = {
+    ( "h" | "dh" | "hd" | "dhd" | "ta" | "ita" )
+    ~ !ASCII_ALPHA
+    }
+
+three_roll = {
+    "i"? ~
+    ( "n" | "pn" | "w" | "gg" )
+    ~ !ASCII_ALPHA
+    }
+
+extra = {
+    ( "mm" | "oo" | "ooo" | "zb" | "rzb" | "bz" | "rbz" | "zy" | "rzy" )
+    ~ !ASCII_ALPHA
+    }
+
+turn_angle = {
+    "1" | "2" | "3" | "4"
+    }
+
+turn_type = {
+    "j" | "jo" | "joi" | "jio"
+    }
+
+rolling_turn = {
+    turn_angle?
+    ~ turn_type
+    ~ !ASCII_ALPHA
+    }
+
+non_aresti = {
+    ( "oj" | "mj" | "aj" )
+    ~ !ASCII_ALPHA
+    }
+
+main_figure = {
+    single_line
+    | twin_line
+    | loop_figure
+    | loop_line_combo
+    | double_loop
+    | humpty
+    | hammerhead
+    | three_roll
+    | extra
+    | rolling_turn
+    | non_aresti
+    }
+
+rolling_figure = {
+    roll_set | "0"
+    }
+
+named_figure = {
+    roll_set?
+    ~ main_figure
+    ~ inner_roll_set*
+    ~ ( intra_line_extension | roll_set? )
+    }
+
+figure = {
+    inter_line_extension?
+    ~ ( named_figure | rolling_figure )
+    ~ inter_line_extension?
+    }
+
+xy_offset = _{ "-"? ~ ASCII_DIGIT+ ~ "," ~ "-"? ~ ASCII_DIGIT+ }
+
+layout_command = _{
+    "ed" | "ej" | "eja" | "eu" | "//" | "/"
+    | ( "[" ~ xy_offset ~ "]" )
+    | ( "(" ~ xy_offset ~ ")" )
+    | ( ASCII_DIGIT* ~ ">" )
+    }
+
+sequence_part = { layout_command? ~ figure | layout_command }
+
+sequence = { sequence_part ~ ( " " ~ sequence_part )* }

@@ -1,0 +1,68 @@
+# Sequence from:
+# https://commons.wikimedia.org/wiki/File:Arestisequence.png
+---
+Line 0
+Line 45
+Line 45 inverted
+Line -45 inverted
+Line -45
+Line 0
+---
+Line 0
+Line 90
+Line 0
+---
+Line 0
+Line -90
+Spin 1/1
+Line -90
+Loop 270
+Line 0 inverted
+---
+Line 0 inverted
+Turn 180 inverted
+Line 0 inverted
+---
+Line 0 inverted
+Roll 2/4
+Line 0
+---
+Line 0
+Loop 225
+Line -45 inverted
+Roll 2/4
+Line -45
+Line 0
+---
+Line 0
+Line 90 up
+Line 0 inverted
+---
+Line 0 inverted
+Line -45 inverted
+Roll 1/2
+Line -45
+Line 0
+---
+Line 0
+Roll 1/1
+Loop 180
+Roll 1/2
+Line 0
+---
+Line 0
+Turn 180 { Roll 2/1 inwards }
+Line 0
+---
+Line 0
+Flick 1/1
+Line 0
+Roll 1/2
+Line 0 inverted
+---
+Line 0 inverted
+Roll 2/2
+Loop 180
+Roll 4/4
+Line 0
+---

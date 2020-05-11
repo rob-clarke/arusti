@@ -142,23 +142,22 @@ fn get_elements_for_roll_set(roll_set_pair: Pair<Rule>) -> Vec<Element> {
     return elements;
     }
 
-use crate::olan::main_figures;
+use crate::olan::figure_defs;
 
 fn get_elements_for_main_figure(figure_pair: Pair<Rule>) -> Vec<Element> {
     let current_pair = figure_pair.into_inner().next().unwrap();
 
     match current_pair.as_rule() {
-        Rule::single_line     => main_figures::get_elements_for_single_line(current_pair),
-        Rule::twin_line       => main_figures::get_elements_for_twin_line(current_pair),
-        Rule::loop_figure     => main_figures::get_elements_for_loop_figure(current_pair),
-        Rule::loop_line_combo => main_figures::get_elements_for_loop_line_combo(current_pair),
-        Rule::double_loop     => main_figures::get_elements_for_double_loop(current_pair),
-        Rule::humpty          => main_figures::get_elements_for_humpty(current_pair),
-        Rule::hammerhead      => main_figures::get_elements_for_hammerhead(current_pair),
-        Rule::three_roll      => main_figures::get_elements_for_three_roll(current_pair),
-        Rule::extra           => main_figures::get_elements_for_extra(current_pair),
-        Rule::rolling_turn    => main_figures::get_elements_for_rolling_turn(current_pair),
-        Rule::non_aresti      => main_figures::get_elements_for_non_aresti(current_pair),
+        Rule::single_line     => figure_defs::get_elements_for_single_line(current_pair),
+        Rule::twin_line       => figure_defs::get_elements_for_twin_line(current_pair),
+        Rule::loop_figure     => figure_defs::get_elements_for_loop_figure(current_pair),
+        Rule::loop_line_combo => figure_defs::get_elements_for_loop_line_combo(current_pair),
+        Rule::double_loop     => figure_defs::get_elements_for_double_loop(current_pair),
+        Rule::humpty          => figure_defs::get_elements_for_humpty(current_pair),
+        Rule::hammerhead      => figure_defs::get_elements_for_hammerhead(current_pair),
+        Rule::three_roll      => figure_defs::get_elements_for_three_roll(current_pair),
+        Rule::extra           => figure_defs::get_elements_for_extra(current_pair),
+        Rule::non_aresti      => figure_defs::get_elements_for_non_aresti(current_pair),
         _ => { unreachable!(); }
         }
     }
@@ -305,18 +304,14 @@ fn parse_figure(olan_figure: Pair<Rule>) -> Figure {
         figure.push( Element::line(0.0) );
         }
     
-    match current_pair.as_rule() {
-        Rule::named_figure => {
-            let figure_elements = get_elements_for_named_figure(current_pair);
-            figure.append(figure_elements);
-            }
-        Rule::rolling_figure => {
-            let figure_elements = get_elements_for_rolling_figure(current_pair);
-            figure.append(figure_elements);
-            }
+    let figure_elements = match current_pair.as_rule() {
+        Rule::named_figure   => get_elements_for_named_figure(current_pair),
+        Rule::rolling_figure => get_elements_for_rolling_figure(current_pair),
+        Rule::rolling_turn   => figure_defs::get_elements_for_rolling_turn(current_pair),
         _ => unreachable!()
-        }
-    
+        };
+    figure.append(figure_elements);
+
     // If has trailing inter_line_extension, check for inverted exit
     let mut exit_is_inverted = false;
     if let Some(current_pair) = inner_pairs.next() {

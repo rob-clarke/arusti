@@ -1,4 +1,4 @@
 pub mod parser;
-mod main_figures;
+mod figure_defs;
 
 pub use parser::parse_sequence;

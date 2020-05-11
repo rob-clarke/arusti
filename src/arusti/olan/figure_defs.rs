@@ -194,31 +194,106 @@ pub fn get_elements_for_rolling_turn(figure_pair: Pair<Rule>) -> Vec<Element> {
     let mut inner_pairs = figure_pair.into_inner();
     let mut current_pair = inner_pairs.next().unwrap();
 
+    // Default turn angle is 90, check for multipliers
     let mut turn_angle = 90.0;
-
     if current_pair.as_rule() == Rule::turn_angle {
         turn_angle = 90.0 * current_pair.as_str().parse::<f32>().unwrap();
         current_pair = inner_pairs.next().unwrap();
         }
     
-    let argument = match current_pair.as_str() {
-        "j"   => 1,
-        "jo"  => 2,
-        "joi" => 3,
-        "jio" => 4,
+    #[derive(PartialEq)]
+    enum TurnType {
+        J, JO, JOI, JIO
+        };
+
+    let turn_type = match current_pair.as_str() {
+        "j"   => TurnType::J,
+        "jo"  => TurnType::JO,
+        "joi" => TurnType::JOI,
+        "jio" => TurnType::JIO,
         _ => { unreachable!(); }
         };
     
-    vec![
-        Element {
-            elem_type: ElementType::TurnStart,
-            inverted: false,
-            angle: turn_angle,
-            argument: argument as f32
-            },
-        Element::combining(0),
-        Element::new(ElementType::TurnEnd)
-        ]
+    let mut turn_rolls = 0.0;
+    if let Some(current_pair) = inner_pairs.next() {
+        match current_pair.as_str() {
+            "1" | "2" | "3" | "4" => {
+                turn_rolls = current_pair.as_str().parse::<f32>().unwrap();
+                }
+            "15" => {
+                turn_rolls = 1.5;
+                }
+            _ => { unreachable!(); }
+            }
+        }
+    
+    if turn_rolls == 0.0 {
+        // We don't care about type as we're not rolling
+        return vec![
+            Element{
+                angle: turn_angle,
+                .. Element::new(ElementType::Turn)
+                }
+            ]
+        }
+
+    if turn_type == TurnType::J || turn_type == TurnType::JO {
+        return match turn_type {
+            TurnType::J  => vec![
+                Element{
+                    angle: turn_angle,
+                    argument: 360.0 * turn_rolls,
+                    .. Element::new(ElementType::Turn)
+                    }
+                ],
+            TurnType::JO => vec![
+                Element{
+                    angle: turn_angle,
+                    argument: -360.0 * turn_rolls,
+                    .. Element::new(ElementType::Turn)
+                    }
+                ],
+            _ => { unreachable!(); }
+            }
+        }
+    
+    let initial_direction = match turn_type {
+        TurnType::JIO =>  1.0,
+        TurnType::JOI => -1.0,
+        _ => { unreachable!(); }
+        };
+    let turn_angle_per_roll = turn_angle / turn_rolls;
+    if turn_rolls == 1.5 {
+        // Finicky special case...
+        return vec![
+            Element{
+                angle: turn_angle_per_roll,
+                argument: initial_direction * 360.0,
+                .. Element::new(ElementType::Turn)
+                },
+            Element{
+                angle: turn_angle_per_roll * 0.5,
+                argument: initial_direction * -180.0,
+                .. Element::new(ElementType::Turn)
+                }
+            ]
+        }
+    
+    // Integer number of rolls
+    let mut direction = initial_direction;
+    let mut elements = Vec::<Element>::new();
+    for _ in 1..(turn_rolls as i8) {
+        elements.push(
+            Element {
+                angle: turn_angle_per_roll,
+                argument: direction * 360.0,
+                .. Element::new(ElementType::Turn)
+                }
+            );
+        direction = -direction; 
+        }
+    
+    return elements;
     }
 
 pub fn get_elements_for_non_aresti(figure_pair: Pair<Rule>) -> Vec<Element> {

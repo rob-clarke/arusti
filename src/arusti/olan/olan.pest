@@ -90,14 +90,19 @@ turn_type = {
     "j" | "jo" | "joi" | "jio"
     }
 
+turn_rolls = {
+    "15" | "1" | "2" | "3" | "4"
+    }
+
 rolling_turn = {
     turn_angle?
     ~ turn_type
+    ~ turn_rolls?
     ~ !ASCII_ALPHA
     }
 
 non_aresti = {
-    ( "oj" | "mj" | "aj" )
+    ( "oj" | "ioj" | "mj" | "aj" )
     ~ !ASCII_ALPHA
     }
 
@@ -111,7 +116,6 @@ main_figure = {
     | hammerhead
     | three_roll
     | extra
-    | rolling_turn
     | non_aresti
     }
 
@@ -128,7 +132,7 @@ named_figure = {
 
 figure = {
     inter_line_extension?
-    ~ ( named_figure | rolling_figure )
+    ~ ( named_figure | rolling_figure | rolling_turn )
     ~ inter_line_extension?
     }
 

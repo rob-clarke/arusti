@@ -6,9 +6,8 @@ pub enum ElementType {
     Line,
     /// Angle defines pull (+ve) or push (-ve) angle. Argument defines radius matching
     Radius,
-    /// Angle defines turn angle. Argument defines roll direction
-    TurnStart,
-    TurnEnd,
+    /// Angle defines turn angle. Argument defines roll, +ve inside, -ve outside
+    Turn,
     /// Angle defines total roll angle. Argument defines hesitation divisions
     Roll,
     /// Angle defines total roll angle

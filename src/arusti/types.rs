@@ -91,6 +91,15 @@ impl Figure {
         }
     }
 
+impl IntoIterator for Figure {
+    type Item = Element;
+    type IntoIter = std::vec::IntoIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.elements.into_iter()
+        }
+    }
+
 #[derive(Debug)]
 pub struct Sequence {
     figures: Vec<Figure>
@@ -111,5 +120,14 @@ impl Sequence {
         self.figures.push(new_figure);
         }
 
+    }
+
+impl IntoIterator for Sequence {
+    type Item = Figure;
+    type IntoIter = std::vec::IntoIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.figures.into_iter()
+        }
     }
 

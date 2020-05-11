@@ -348,13 +348,11 @@ pub fn parse_sequence(olan_string: String) -> Sequence {
             }
         }
     
+    
+   // With sequence parsed, need to check for:
+   // - Inverted flight continuity
+   // - Spin entry trimming
+
     return sequence;
 
-    /*
-    match sequence.into_inner().as_rule() {
-        Rule::figure => ;
-        _ => ;
-        }
-    */
-    
     }

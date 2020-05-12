@@ -1,3 +1,5 @@
+use log;
+
 use pest::Parser;
 
 #[derive(Parser)]
@@ -345,7 +347,7 @@ fn parse_figure(olan_figure: Pair<Rule>) -> Figure {
         }
 
 
-    println!("PIV: {:#?}",figure_elements);
+    log::debug!("PIV: {:#?}",figure_elements);
     // Apply inversions due to in-figure rolls
     let mut currently_inverted = false;
     let mut inverted_by_roll = false;
@@ -396,23 +398,23 @@ fn parse_figure(olan_figure: Pair<Rule>) -> Figure {
                 }
             _ => {}
             }
-        println!("Pitch: {}", current_pitch);
+        log::debug!("Pitch: {}", current_pitch);
         }
 
-    println!("PFR: {:#?}",figure_elements);
-    println!("Current_inversion {:?}",currently_inverted);
+    log::debug!("PFR: {:#?}",figure_elements);
+    log::debug!("Current_inversion {:?}",currently_inverted);
     if entry_is_inverted {
-        //println!("Entry is inverted");
+        //log::debug!("Entry is inverted");
         // Figure library assumes no inversion
         // Invert all figure elements
         invert_figure_elements(&mut figure_elements,0);
         currently_inverted = !currently_inverted;
         }
 
-    println!("IFR: {:#?}",figure_elements);
-    println!("Current_inversion {:?}",currently_inverted);
+    log::debug!("IFR: {:#?}",figure_elements);
+    log::debug!("Current_inversion {:?}",currently_inverted);
     if currently_inverted != exit_is_inverted {
-        println!("Mismatched exit!");
+        log::debug!("Mismatched exit!");
         // Mismatched exit
         // Step back to find invertible radius
         let mut rev_idx_invert_from = figure_elements.len();
@@ -427,7 +429,7 @@ fn parse_figure(olan_figure: Pair<Rule>) -> Figure {
                 _ => {}
                 }
             }
-        //println!("Inverting from {}",rev_idx_invert_from);
+        log::debug!("Inverting from {}",rev_idx_invert_from);
         let invert_from = figure_elements.len() - 1 - rev_idx_invert_from;
         invert_figure_elements(&mut figure_elements,invert_from);
         }

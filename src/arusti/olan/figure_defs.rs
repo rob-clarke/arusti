@@ -4,12 +4,12 @@ use pest::iterators::Pair;
 
 pub fn get_elements_for_single_line(figure_pair: Pair<Rule>) -> Vec<Element> {
     match figure_pair.as_str() {
-        "d"  => vec![ Element::radius(  45.0), Element::line( 45.0), Element::radius( -45.0) ],
-        "id" => vec![ Element::radius( -45.0), Element::line(-45.0), Element::radius(  45.0) ],
-        "v"  => vec![ Element::radius(  90.0), Element::line( 90.0), Element::radius( -90.0) ],
-        "iv" => vec![ Element::radius( -90.0), Element::line(-90.0), Element::radius(  90.0) ],
-        "z"  => vec![ Element::radius( 135.0), Element::line( 45.0), Element::radius(-135.0) ],
-        "iz" => vec![ Element::radius(-135.0), Element::line(-45.0), Element::radius( 135.0) ],
+        "d"  => vec![ Element::radius(  45.0), Element::line( 45.0), Element::combining(0), Element::line( 45.0), Element::radius( -45.0) ],
+        "id" => vec![ Element::radius( -45.0), Element::line(-45.0), Element::combining(0), Element::line(-45.0), Element::radius(  45.0) ],
+        "v"  => vec![ Element::radius(  90.0), Element::line( 90.0), Element::combining(0), Element::line( 90.0), Element::radius( -90.0) ],
+        "iv" => vec![ Element::radius( -90.0), Element::line(-90.0), Element::combining(0), Element::line(-90.0), Element::radius(  90.0) ],
+        "z"  => vec![ Element::radius( 135.0), Element::line( 45.0), Element::combining(0), Element::line( 45.0), Element::radius(-135.0) ],
+        "iz" => vec![ Element::radius(-135.0), Element::line(-45.0), Element::combining(0), Element::line(-45.0), Element::radius( 135.0) ],
         _ => { unreachable!(); }
         }
     }
@@ -50,7 +50,7 @@ pub fn get_elements_for_loop_figure(figure_pair: Pair<Rule>) -> Vec<Element> {
             Element::radius(45.0), Element::line( 45.0),
             Element::radius(90.0), Element::line( 45.0),
             Element::radius(90.0), Element::line(-45.0),
-            Element::combining(1), Element::line(-135.0),
+            Element::combining(1), Element::line(-45.0),
             Element::radius(90.0), Element::line(-45.0),
             Element::radius(45.0)
             ],
@@ -58,7 +58,7 @@ pub fn get_elements_for_loop_figure(figure_pair: Pair<Rule>) -> Vec<Element> {
             Element::radius(-45.0), Element::line(-45.0),
             Element::radius(-90.0), Element::line(-45.0),
             Element::radius(-90.0), Element::line( 45.0),
-            Element::combining(1), Element::line( 135.0),
+            Element::combining(1), Element::line( 45.0),
             Element::radius(-90.0), Element::line( 45.0),
             Element::radius(-45.0)
             ],

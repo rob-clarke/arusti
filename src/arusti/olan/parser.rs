@@ -10,7 +10,7 @@ use pest::iterators::Pair;
 
 fn get_element_for_roll_element(roll_element_pair: Pair<Rule>, reverse_roll: bool) -> Element {
     let roll_angle : i8;
-    let mut roll_divisions : i8 = 0;
+    let mut roll_divisions : i8 = 1;
     let mut elem_type : ElementType = ElementType::Roll;
     let mut inverted : bool = false;
 
@@ -62,7 +62,7 @@ fn get_element_for_roll_element(roll_element_pair: Pair<Rule>, reverse_roll: boo
         }
 
     let computed_roll : f32 = match roll_divisions {
-        0 => match roll_angle {
+        1 => match roll_angle {
             1 => 360.0,
             2 => 180.0,
             3 => 270.0,
@@ -281,6 +281,32 @@ fn is_transition_inverted(line_extension: &Pair<Rule>) -> bool {
     line_extension.as_str().to_string().contains("-")
     }
 
+fn invert_figure_elements(elements: &mut Vec<Element>, from_idx: usize) {
+    // Push -> pull
+    // Line -> inverted line (for non-verticals)
+    for (i,mut elem) in elements.iter_mut().enumerate() {
+        if i < from_idx {
+            continue;
+            }
+        match elem.elem_type {
+            ElementType::Radius => {
+                if elem.argument >= 0.0 {
+                    elem.angle = -elem.angle;
+                    }
+                }
+            ElementType::Turn => {
+                elem.inverted = !elem.inverted;
+                }
+            ElementType::Line => {
+                if !( (elem.angle == 90.0) || (elem.angle == -90.0) ) {
+                    elem.inverted = !elem.inverted;
+                    }
+                }
+            _ => {}
+            }
+        }
+    }
+
 fn parse_figure(olan_figure: Pair<Rule>) -> Figure {
     let mut figure = Figure::new();
 
@@ -304,13 +330,12 @@ fn parse_figure(olan_figure: Pair<Rule>) -> Figure {
         figure.push( Element::line(0.0) );
         }
     
-    let figure_elements = match current_pair.as_rule() {
+    let mut figure_elements = match current_pair.as_rule() {
         Rule::named_figure   => get_elements_for_named_figure(current_pair),
         Rule::rolling_figure => get_elements_for_rolling_figure(current_pair),
         Rule::rolling_turn   => figure_defs::get_elements_for_rolling_turn(current_pair),
         _ => unreachable!()
         };
-    figure.append(figure_elements);
 
     // If has trailing inter_line_extension, check for inverted exit
     let mut exit_is_inverted = false;
@@ -318,6 +343,96 @@ fn parse_figure(olan_figure: Pair<Rule>) -> Figure {
         // Will be inter_line_extension by parser rules
         exit_is_inverted = is_transition_inverted(&current_pair);
         }
+
+
+    println!("PIV: {:#?}",figure_elements);
+    // Apply inversions due to in-figure rolls
+    let mut currently_inverted = false;
+    let mut inverted_by_roll = false;
+    let mut current_pitch = 0.0;
+    for mut element in figure_elements.iter_mut() {
+        match element.elem_type {
+            ElementType::Radius => {
+                if inverted_by_roll == true && element.argument >= 0.0 {
+                    element.angle = -element.angle
+                    }
+                current_pitch = (current_pitch + element.angle + 360.0) % 360.0;
+                if 90.0 < current_pitch && current_pitch < 270.0 {
+                    currently_inverted = true;
+                    }
+                else {
+                    currently_inverted = false;
+                    }
+                }
+            ElementType::Roll | ElementType::Flick => {
+                match current_pitch {
+                    90.0 | 270.0 => {},
+                    0.0 | 180.0 => {
+                        if (element.angle % 360.0) != 0.0 {
+                            inverted_by_roll = !inverted_by_roll;
+                            currently_inverted = !currently_inverted;
+                            current_pitch = (current_pitch + 180.0 + 360.0) % 360.0;
+                            }
+                        },
+                    45.0 | 225.0 => {
+                        if (element.angle % 360.0) != 0.0 {
+                            inverted_by_roll = !inverted_by_roll;
+                            currently_inverted = !currently_inverted;
+                            current_pitch = (current_pitch + 90.0 + 360.0) % 360.0;
+                            }
+                        }
+                    135.0 | 315.0 => {
+                        if (element.angle % 360.0) != 0.0 {
+                            inverted_by_roll = !inverted_by_roll;
+                            currently_inverted = !currently_inverted;
+                            current_pitch = (current_pitch - 90.0 + 360.0) % 360.0;
+                            }
+                        }
+                    _ => { unreachable!(); }
+                    }
+                }
+            ElementType::Line => {
+                element.inverted = currently_inverted;
+                }
+            _ => {}
+            }
+        println!("Pitch: {}", current_pitch);
+        }
+
+    println!("PFR: {:#?}",figure_elements);
+    println!("Current_inversion {:?}",currently_inverted);
+    if entry_is_inverted {
+        //println!("Entry is inverted");
+        // Figure library assumes no inversion
+        // Invert all figure elements
+        invert_figure_elements(&mut figure_elements,0);
+        currently_inverted = !currently_inverted;
+        }
+
+    println!("IFR: {:#?}",figure_elements);
+    println!("Current_inversion {:?}",currently_inverted);
+    if currently_inverted != exit_is_inverted {
+        println!("Mismatched exit!");
+        // Mismatched exit
+        // Step back to find invertible radius
+        let mut rev_idx_invert_from = figure_elements.len();
+        for (i,element) in figure_elements.iter_mut().rev().enumerate() {
+            match element.elem_type {
+                ElementType::Radius => {
+                    if element.argument >= 0.0 {
+                        rev_idx_invert_from = i;
+                        break;
+                        }
+                    }
+                _ => {}
+                }
+            }
+        //println!("Inverting from {}",rev_idx_invert_from);
+        let invert_from = figure_elements.len() - 1 - rev_idx_invert_from;
+        invert_figure_elements(&mut figure_elements,invert_from);
+        }
+
+    figure.append(figure_elements);
 
     // Add exit line
     if exit_is_inverted {
@@ -348,10 +463,10 @@ pub fn parse_sequence(olan_string: String) -> Sequence {
             }
         }
     
-    
-   // With sequence parsed, need to check for:
-   // - Inverted flight continuity
-   // - Spin entry trimming
+    // With sequence parsed, need to check for:
+    // - Inverted flight continuity
+    // - Spin entry trimming
+    // - Doubled line trimming
 
     return sequence;
 

@@ -1,10 +1,11 @@
 #[derive(Debug)]
 #[derive(PartialEq)]
 #[derive(Clone)]
+#[derive(Copy)]
 pub enum ElementType {
     /// Angle defines angle between forward direction and ground
     Line,
-    /// Angle defines pull (+ve) or push (-ve) angle. Argument defines radius matching
+    /// Angle defines pull (+ve) or push (-ve) angle. Argument defines radius matching. -ve argument is non-invertible
     Radius,
     /// Angle defines turn angle. Argument defines roll, +ve inside, -ve outside
     Turn,
@@ -23,6 +24,8 @@ pub enum ElementType {
 
 #[derive(Debug)]
 #[derive(Clone)]
+#[derive(Copy)]
+#[derive(PartialEq)]
 pub struct Element {
     pub elem_type: ElementType,
     pub inverted: bool,
@@ -72,7 +75,7 @@ impl Element {
 
 #[derive(Debug)]
 pub struct Figure {
-    elements: Vec<Element>,
+    pub elements: Vec<Element>,
     }
 
 impl Figure {
@@ -102,7 +105,7 @@ impl IntoIterator for Figure {
 
 #[derive(Debug)]
 pub struct Sequence {
-    figures: Vec<Figure>
+    pub figures: Vec<Figure>
     }
 
 impl Sequence {

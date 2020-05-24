@@ -25,8 +25,6 @@ fn full_sequence() {
             Element::invline(45.0),
             Element::radius(90.0),
             Element::invline(-45.0),
-            // Expect double in case of combining roll
-            Element::invline(-45.0),
             Element::radius(90.0),
             Element::line(-45.0),
             Element::radius(45.0),
@@ -39,8 +37,6 @@ fn full_sequence() {
         &vec![
             Element::line(0.0),
             Element::radius(90.0),
-            Element::line(90.0),
-            // Expect double in case of combining roll
             Element::line(90.0),
             Element::radius(-90.0),
             Element::line(0.0),
@@ -98,8 +94,6 @@ fn full_sequence() {
         &vec![
             Element::line(0.0),
             Element::radius(90.0),
-            Element::line(90.0),
-            // Expect double in case of combining roll
             Element::line(90.0),
             Element::radius(90.0),
             Element::invline(0.0),

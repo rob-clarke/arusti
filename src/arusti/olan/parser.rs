@@ -6,7 +6,7 @@ use pest::Parser;
 #[grammar = "arusti/olan/olan.pest"]
 struct OLANParser;
 
-use crate::types::{ElementType, Element, Figure, Sequence };
+use crate::types::{ElementType, Element, Figure, Sequence};
 
 use pest::iterators::Pair;
 
@@ -465,10 +465,14 @@ pub fn parse_sequence(olan_string: String) -> Sequence {
             }
         }
     
+    // Remove remaining doubled lines
+    for figure in &mut sequence.figures {
+        figure.elements.dedup_by(|a,b| a.elem_type == ElementType::Line && a == b);
+        }
+        
     // With sequence parsed, need to check for:
     // - Inverted flight continuity
     // - Spin entry trimming
-    // - Doubled line trimming
 
     return sequence;
 

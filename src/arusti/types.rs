@@ -94,12 +94,13 @@ impl Figure {
         }
     }
 
-impl IntoIterator for Figure {
-    type Item = Element;
-    type IntoIter = std::vec::IntoIter<Self::Item>;
+impl<'a> IntoIterator for &'a Figure {
+    type Item = &'a Element;
+    type IntoIter = std::slice::Iter<'a,Element>;
 
     fn into_iter(self) -> Self::IntoIter {
-        self.elements.into_iter()
+        let inner_vec = &self.elements;
+        inner_vec.into_iter()
         }
     }
 
@@ -125,12 +126,13 @@ impl Sequence {
 
     }
 
-impl IntoIterator for Sequence {
-    type Item = Figure;
-    type IntoIter = std::vec::IntoIter<Self::Item>;
+impl<'a> IntoIterator for &'a Sequence {
+    type Item = &'a Figure;
+    type IntoIter = std::slice::Iter<'a,Figure>;
 
     fn into_iter(self) -> Self::IntoIter {
-        self.figures.into_iter()
+        let inner_vec = &self.figures;
+        inner_vec.into_iter()
         }
     }
 

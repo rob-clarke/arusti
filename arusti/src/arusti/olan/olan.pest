@@ -55,8 +55,10 @@ loop_line_combo = {
     }
 
 double_loop = {
-    "i"? ~
-    ( "cc" | "rcc" )
+    (
+        ( "i"? ~ ( "cc" | "rcc" | "oo" ) ) |
+        "ooo"
+        )
     ~ !ASCII_ALPHA
     }
 

@@ -171,7 +171,57 @@ pub fn get_elements_for_loop_line_combo(figure_pair: Pair<Rule>) -> Vec<Element>
     }
 
 pub fn get_elements_for_double_loop(figure_pair: Pair<Rule>) -> Vec<Element> {
-    Vec::<Element>::new()
+    match figure_pair.as_str() {
+        "cc" => vec![
+            Element::line(0.0), Element::combining(-1),
+            Element::radius(225.0),
+            Element::invline(-45.0), Element::combining(1), Element::invline(-45.0),
+            Element::radius(-270.0),
+            Element::line(-45.0), Element::combining(0), Element::line(-45.0),
+            Element::radius(45.0)
+            ],
+        "rcc" => vec![
+            Element::radius(45.0),
+            Element::line(45.0), Element::combining(-1), Element::line(45.0), 
+            Element::radius(-270.0),
+            Element::invline(45.0), Element::combining(1), Element::invline(45.0),
+            Element::radius(225.0),
+            Element::combining(0),
+            Element::line(0.0)
+            ],
+        "oo" => vec![
+            Element::radius(180.0),
+            Element::radius(-360.0),
+            Element::radius(180.0)
+            ],
+        "icc" => vec![
+            Element::line(0.0), Element::combining(-1),
+            Element::radius(-225.0),
+            Element::invline(45.0), Element::combining(1), Element::invline(45.0),
+            Element::radius(270.0),
+            Element::line(45.0), Element::combining(0), Element::line(45.0),
+            Element::radius(-45.0)
+            ],
+        "ircc" => vec![
+            Element::radius(-45.0),
+            Element::line(-45.0), Element::combining(-1), Element::line(-45.0),
+            Element::line(270.0),
+            Element::invline(-45.0), Element::combining(1), Element::invline(-45.0),
+            Element::line(-225.0),
+            Element::combining(0),
+            Element::line(0.0)
+            ],
+        "ioo" => vec![
+            Element::radius(-180.0),
+            Element::radius(360.0),
+            Element::radius(-180.0)
+            ],
+        "ooo" => vec![
+            Element::radius(360.0),
+            Element::radius(-360.0),
+            ],
+        _ => { unreachable!(); }
+        }
     }
 
 pub fn get_elements_for_humpty(figure_pair: Pair<Rule>) -> Vec<Element> {
@@ -256,7 +306,7 @@ pub fn get_elements_for_rolling_turn(figure_pair: Pair<Rule>) -> Vec<Element> {
     #[derive(PartialEq)]
     enum TurnType {
         J, JO, JOI, JIO
-        };
+        }
 
     let turn_type = match current_pair.as_str() {
         "j"   => TurnType::J,

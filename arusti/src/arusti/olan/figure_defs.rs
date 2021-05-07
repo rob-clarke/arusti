@@ -162,10 +162,34 @@ pub fn get_elements_for_loop_line_combo(figure_pair: Pair<Rule>) -> Vec<Element>
             Element::line(-45.0), Element::combining(-1), Element::line(-45.0),
             Element::radius(-315.0)
             ],
-        "y"   => vec![ Element::radius(0.0) ],
-        "iy"  => vec![ Element::radius(0.0) ],
-        "ry"  => vec![ Element::radius(0.0) ],
-        "iry" => vec![ Element::radius(0.0) ],
+        "y"   => vec![
+            Element::radius(45.0),
+            Element::line(45.0), Element::combining(-1), Element::line(45.0),
+            Element::radius(225.0),
+            Element::line(-90.0), Element::combining(0), Element::line(-90.0),
+            Element::radius(90.0)
+            ],
+        "iy"  => vec![
+            Element::radius(-45.0),
+            Element::line(-45.0), Element::combining(-1), Element::line(-45.0),
+            Element::radius(-225.0),
+            Element::line(90.0), Element::combining(0), Element::line(90.0),
+            Element::radius(-90.0)
+            ],
+        "ry"  => vec![
+            Element::radius(90.0),
+            Element::line(90.0), Element::combining(-1), Element::line(90.0),
+            Element::radius(225.0),
+            Element::line(-45.0), Element::combining(0), Element::line(45.0),
+            Element::radius(45.0)
+            ],
+        "iry" => vec![
+            Element::radius(-90.0),
+            Element::line(-90.0), Element::combining(-1), Element::line(-90.0),
+            Element::radius(-225.0),
+            Element::line(45.0), Element::combining(0), Element::line(45.0),
+            Element::radius(-45.0)
+            ],
         _ => { unreachable!(); }
         }
     }

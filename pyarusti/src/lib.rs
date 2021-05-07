@@ -18,6 +18,7 @@ impl IntoPy<PyObject> for ElementWrapper {
             arusti::ElementType::Roll => pyelement.set_item("type","roll"),
             arusti::ElementType::Flick => pyelement.set_item("type","flick"),
             arusti::ElementType::Spin => pyelement.set_item("type","spin"),
+            arusti::ElementType::Stall => pyelement.set_item("type","stall"),
             _ => unreachable!()
             };
 

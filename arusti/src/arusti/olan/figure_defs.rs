@@ -179,7 +179,59 @@ pub fn get_elements_for_humpty(figure_pair: Pair<Rule>) -> Vec<Element> {
     }
 
 pub fn get_elements_for_hammerhead(figure_pair: Pair<Rule>) -> Vec<Element> {
-    Vec::<Element>::new()
+    match figure_pair.as_str() {
+        "h" => vec![
+            Element::radius(90.0),
+            Element::line(90.0), Element::combining(-1), Element::line(90.0),
+            Element::stall(180.0,0.0),
+            Element::line(-90.0), Element::combining(0), Element::line(-90.0),
+            Element::radius(90.0)
+            ],
+        "dh"   => vec![
+            Element::radius(45.0),
+            Element::line(45.0), Element::combining(-1), Element::line(45.0),
+            Element::radius(45.0),
+            Element::line(90.0), Element::combining(1), Element::line(90.0),
+            Element::stall(180.0,0.0),
+            Element::line(-90.0), Element::combining(0), Element::line(-90.0),
+            Element::radius(90.0)
+            ],
+        "hd"  => vec![ 
+            Element::radius(90.0),
+            Element::line(90.0), Element::combining(-1), Element::line(90.0),
+            Element::stall(180.0,0.0),
+            Element::line(-90.0), Element::combining(1), Element::line(-90.0),
+            Element::radius(45.0),
+            Element::line(-45.0), Element::combining(0), Element::line(-45.0),
+            Element::radius(45.0)
+            ],
+        "dhd"  => vec![
+            Element::radius(45.0),
+            Element::line(45.0), Element::combining(-1), Element::line(45.0),
+            Element::radius(45.0),
+            Element::line(90.0), Element::combining(1), Element::line(90.0),
+            Element::stall(180.0,0.0),
+            Element::line(-90.0), Element::combining(2), Element::line(-90.0),
+            Element::radius(45.0),
+            Element::line(-45.0), Element::combining(0), Element::line(-45.0),
+            Element::radius(45.0)
+            ],
+        "ta" => vec![
+            Element::radius(90.0),
+            Element::line(90.0), Element::combining(-1), Element::line(90.0),
+            Element::stall(0.0,-180.0),
+            Element::line(-90.0), Element::combining(0), Element::line(-90.0),
+            Element::radius(90.0)
+            ],
+        "ita" => vec![
+            Element::radius(90.0),
+            Element::line(90.0), Element::combining(-1), Element::line(90.0),
+            Element::stall(0.0,180.0),
+            Element::line(-90.0), Element::combining(0), Element::line(-90.0),
+            Element::radius(90.0)
+            ],
+        _ => { unreachable!(); }
+        }
     }
 
 pub fn get_elements_for_three_roll(figure_pair: Pair<Rule>) -> Vec<Element> {

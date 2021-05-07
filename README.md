@@ -13,7 +13,7 @@ this will generate a list of figures, each consisting of a list of elements as a
 
 ```python
 {
-    'type': 'line|radius|turn|roll|flick|spin',
+    'type': 'line|radius|turn|roll|flick|spin|stall',
     'inverted': False,
     'angle': 0.0,
     'argument': 0.0
@@ -40,6 +40,9 @@ Flick,
 
 /// Angle defines total spin angle
 Spin,
+
+/// Angle defines yaw, argument defines pitch between entry and exit
+Stall
 ```
 
 ### Usage

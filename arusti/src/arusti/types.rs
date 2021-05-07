@@ -15,6 +15,8 @@ pub enum ElementType {
     Flick,
     /// Angle defines total spin angle
     Spin,
+    /// Angle defines yaw, argument defines pitch between entry and exit
+    Stall,
     /// Defines insertion point for combining elements in a figure
     /// If argument = -1 -> Takes rolls from before figure
     /// If argument = 0 -> Takes rolls from after figure
@@ -64,6 +66,14 @@ impl Element {
             }
         }
     
+    pub fn stall(yaw: f32, pitch: f32) -> Element {
+        Element {
+            angle: yaw,
+            argument: pitch,
+            .. Element::new(ElementType::Stall)
+            }
+        }
+
     pub fn combining(argument: i8) -> Element {
         Element {
             argument: argument as f32,

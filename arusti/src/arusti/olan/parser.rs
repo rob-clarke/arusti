@@ -396,6 +396,10 @@ fn parse_figure(olan_figure: Pair<Rule>) -> Figure {
             ElementType::Line => {
                 element.inverted = currently_inverted;
                 }
+            ElementType::Stall => {
+                // Indicate pitch reversal through stalling figure
+                current_pitch = (current_pitch + 180.0 + 360.0) % 360.0;
+                }
             _ => {}
             }
         log::debug!("Pitch: {}", current_pitch);

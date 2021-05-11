@@ -119,3 +119,21 @@ fn loop_with_inverted_entry_and_inverting_combining_roll() {
     
     compare_elements(&sequence.figures[0].elements, &expected_elements);
     }
+
+#[test]
+fn hammerhead_turn() {
+    let sequence_str = "h".to_string();
+    let sequence = arusti::olan::parse_sequence(sequence_str);
+
+    let expected_elements = vec![
+        Element::line(0.0),    
+        Element::radius(90.0),
+        Element::line(90.0),
+        Element { angle: 180.0, argument: 0.0, .. Element::new(ElementType::Stall) },
+        Element::line(-90.0),
+        Element::radius(90.0),
+        Element::line(0.0),
+        ];
+    
+    compare_elements(&sequence.figures[0].elements, &expected_elements);
+    }

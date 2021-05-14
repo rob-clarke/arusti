@@ -357,7 +357,81 @@ pub fn get_elements_for_hammerhead(figure_pair: Pair<Rule>) -> Vec<Element> {
     }
 
 pub fn get_elements_for_three_roll(figure_pair: Pair<Rule>) -> Vec<Element> {
-    Vec::<Element>::new()
+    match figure_pair.as_str() {
+        "n"   => vec![
+            Element::radius(90.0),
+            Element::line(90.0), Element::combining(-1), Element::line(90.0),
+            Element::radius(135.0),
+            Element::invline(-45.0), Element::combining(1), Element::invline(-45.0),
+            Element::radius(-135.0),
+            Element::line(90.0), Element::combining(0), Element::line(90.0),
+            Element::radius(-90.0),
+            ],
+        "in"  => vec![
+            Element::radius(-90.0),
+            Element::line(-90.0), Element::combining(-1), Element::line(-90.0),
+            Element::radius(135.0),
+            Element::line(45.0), Element::combining(1), Element::line(45.0),
+            Element::radius(-135.0),
+            Element::line(-90.0), Element::combining(0), Element::line(-90.0),
+            Element::radius(90.0),
+            ],
+        "pn"  => vec![
+            Element::radius(90.0),
+            Element::line(90.0), Element::combining(-1), Element::line(90.0),
+            Element::radius(-135.0),
+            Element::line(-45.0), Element::combining(1), Element::line(-45.0),
+            Element::radius(135.0),
+            Element::line(90.0), Element::combining(0), Element::line(90.0),
+            Element::radius(-90.0),
+            ],
+        "ipn" => vec![
+            Element::radius(-90.0),
+            Element::line(90.0), Element::combining(-1), Element::line(90.0),
+            Element::radius(-135.0),
+            Element::invline(45.0), Element::combining(1), Element::invline(45.0),
+            Element::radius(135.0),
+            Element::line(-90.0), Element::combining(0), Element::line(-90.0),
+            Element::radius(90.0),
+            ],
+        "w"   => vec![
+            Element::radius(45.0),
+            Element::line(45.0), Element::combining(-1), Element::line(45.0),
+            Element::radius(-135.0),
+            Element::line(-90.0), Element::combining(1), Element::line(-90.0),
+            Element::radius(135.0),
+            Element::line(45.0), Element::combining(0), Element::line(45.0),
+            Element::radius(-45.0),
+            ],
+        "iw"  => vec![
+            Element::radius(-45.0),
+            Element::line(-45.0), Element::combining(-1), Element::line(-45.0),
+            Element::radius(135.0),
+            Element::line(90.0), Element::combining(1), Element::line(90.0),
+            Element::radius(-135.0),
+            Element::line(-45.0), Element::combining(0), Element::line(-45.0),
+            Element::radius(45.0),
+            ],
+        "gg"  => vec![
+            Element::radius(45.0),
+            Element::line(45.0), Element::combining(-1), Element::line(45.0),
+            Element::radius(-270.0),
+            Element::invline(45.0), Element::combining(1), Element::invline(45.0),
+            Element::radius(270.0),
+            Element::line(45.0), Element::combining(0), Element::line(45.0),
+            Element::radius(-45.0),
+            ],
+        "igg" => vec![
+            Element::radius(-45.0),
+            Element::line(-45.0), Element::combining(-1), Element::line(-45.0),
+            Element::radius(270.0),
+            Element::invline(-45.0), Element::combining(1), Element::invline(-45.0),
+            Element::radius(-270.0),
+            Element::line(-45.0), Element::combining(0), Element::line(-45.0),
+            Element::radius(45.0),
+            ],
+        _ => { unreachable!(); }
+        }
     }
 
 pub fn get_elements_for_extra(figure_pair: Pair<Rule>) -> Vec<Element> {

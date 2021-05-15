@@ -10,5 +10,5 @@ pub use types::{ElementType,Element,Figure,Sequence};
 
 pub mod olan;
 
-pub mod data_generation;
-pub use data_generation::{DataPointGenerator,DataPoint,PerformanceOptions};
+//pub mod data_generation;
+//pub use data_generation::{DataPointGenerator,DataPoint,PerformanceOptions};

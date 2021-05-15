@@ -24,9 +24,6 @@ pub enum ElementType {
     /// Auxiliary angle defines roll, positive angle is towards inside, negative is outside
     Turn,
 
-    /// Main angle defines total spins
-    Spin,
-
     /// Main angle defines yaw between entry and exit
     /// Auxiliary angle defines pitch between entry and exit
     Stall,
@@ -48,11 +45,24 @@ pub enum Attitude {
     KnifeEdge,
 }
 
+impl Attitude {
+    pub fn get_inverted(attitude: Attitude) -> Attitude {
+        match attitude {
+            Attitude::Normal => Attitude::Inverted,
+            Attitude::Inverted => Attitude::Normal,
+            _ => attitude
+            }
+        }
+    }
+
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum RollType {
     None,
-    Normal,
+    Standard,
     Flick,
+    InvertedFlick,
+    Spin,
+    InvertedSpin,
     HesitationHalves,
     HesitationQuarters,
     HesitationEighths,
@@ -62,8 +72,8 @@ pub enum RollType {
 pub struct Element {
     pub elem_type: ElementType,
     pub attitude: Attitude,
-    pub main_angle: f32,
-    pub aux_angle: f32,
+    pub main_angle: i16,
+    pub aux_angle: i16,
     pub roll_type: RollType,
     pub matching: i32,
 }
@@ -73,42 +83,42 @@ impl Element {
         Element {
             elem_type: elem_type,
             attitude: Attitude::Normal,
-            main_angle: 0.0,
-            aux_angle: 0.0,
+            main_angle: 0,
+            aux_angle: 0,
             roll_type: RollType::None,
             matching: 0,
         }
     }
 
-    pub fn line(angle: f32) -> Element {
+    pub fn line(angle: i16) -> Element {
         Element {
             main_angle: angle,
             ..Element::new(ElementType::Line)
         }
     }
 
-    pub fn invline(angle: f32) -> Element {
+    pub fn invline(angle: i16) -> Element {
         Element {
             attitude: Attitude::Inverted,
             ..Element::line(angle)
         }
     }
 
-    pub fn keline(angle: f32) -> Element {
+    pub fn keline(angle: i16) -> Element {
         Element {
             attitude: Attitude::KnifeEdge,
             ..Element::line(angle)
         }
     }
 
-    pub fn radius(angle: f32) -> Element {
+    pub fn radius(angle: i16) -> Element {
         Element {
             main_angle: angle,
             ..Element::new(ElementType::Radius)
         }
     }
 
-    pub fn stall(yaw: f32, pitch: f32) -> Element {
+    pub fn stall(yaw: i16, pitch: i16) -> Element {
         Element {
             main_angle: yaw,
             aux_angle: pitch,

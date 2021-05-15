@@ -435,7 +435,48 @@ pub fn get_elements_for_three_roll(figure_pair: Pair<Rule>) -> Vec<Element> {
     }
 
 pub fn get_elements_for_extra(figure_pair: Pair<Rule>) -> Vec<Element> {
-    Vec::<Element>::new()
+    match figure_pair.as_str() {
+        "mm" => vec![
+            Element::radius(180.0),
+            Element::radius(-180.0),
+            ],
+        "zb" => vec![
+            Element::radius(135.0),
+            Element::invline(45.0), Element::combining(-1), Element::invline(45.0),
+            Element::radius(180.0),
+            Element::line(-45.0), Element::combining(0), Element::line(-45.0),
+            Element::radius(45.0),
+            ],
+        "rzb" => vec![
+            Element::radius(135.0),
+            Element::invline(45.0), Element::combining(-1), Element::invline(45.0),
+            Element::radius(-180.0),
+            Element::line(-45.0), Element::combining(0), Element::line(-45.0),
+            Element::radius(45.0),
+            ],
+        "bz" => vec![
+            Element::radius(45.0),
+            Element::line(45.0), Element::combining(-1), Element::line(45.0),
+            Element::radius(180.0),
+            Element::invline(-45.0), Element::combining(0), Element::invline(-45.0),
+            Element::radius(135.0),
+            ],
+        "rbz" => vec![
+            Element::radius(45.0),
+            Element::line(45.0), Element::combining(-1), Element::line(45.0),
+            Element::radius(-180.0),
+            Element::invline(-45.0), Element::combining(0), Element::invline(-45.0),
+            Element::radius(135.0),
+            ],
+        "zy" => vec![
+            Element::radius(135.0),
+            Element::invline(45.0), Element::combining(-1), Element::invline(45.0),
+            Element::radius(-225.0),
+            Element::invline(-90.0), Element::combining(0), Element::invline(-90.0),
+            Element::radius(90.0),
+            ],
+        _ => { unreachable!(); }
+        }
     }
 
 pub fn get_elements_for_rolling_turn(figure_pair: Pair<Rule>) -> Vec<Element> {

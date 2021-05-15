@@ -80,7 +80,7 @@ three_roll = {
     }
 
 extra = {
-    ( "mm" | "oo" | "ooo" | "zb" | "rzb" | "bz" | "rbz" | "zy" | "rzy" )
+    ( "mm" | "zb" | "rzb" | "bz" | "rbz" | "zy" )
     ~ !ASCII_ALPHA
     }
 

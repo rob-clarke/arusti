@@ -50,10 +50,10 @@ impl Attitude {
         match attitude {
             Attitude::Normal => Attitude::Inverted,
             Attitude::Inverted => Attitude::Normal,
-            _ => attitude
-            }
+            _ => attitude,
         }
     }
+}
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum RollType {

@@ -3,10 +3,10 @@ extern crate pest;
 extern crate pest_derive;
 
 extern crate nalgebra;
-pub use nalgebra::{Vector3, UnitQuaternion};
+pub use nalgebra::{UnitQuaternion, Vector3};
 
 mod types;
-pub use types::{ElementType,Element,Figure,Sequence};
+pub use types::{Element, ElementType, Figure, Sequence};
 
 pub mod olan;
 

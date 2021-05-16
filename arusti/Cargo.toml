@@ -10,15 +10,10 @@ pest = "2.1.3"
 pest_derive = "2.1.0"
 log = "0.4.8"
 roxmltree = "0.11.0"
+env_logger = "*"
+test-env-log = "0.2.7"
+itertools = "*"
 
 [lib]
 name = "arusti"
 path = "src/arusti/arusti.rs"
-
-[[bin]]
-name = "autojudge"
-path = "src/autojudge.rs"
-
-[[bin]]
-name = "datagen"
-path = "src/datagen.rs"

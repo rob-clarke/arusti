@@ -122,13 +122,13 @@ pub fn get_elements_for_loop_figure(figure_pair: Pair<Rule>) -> Vec<Element> {
         "m" => vec![Element::radius(180)],
         "o" => vec![
             Element::radius(170),
-            Element::combining(0, Element::radius(20)),
-            Element::radius(170),
+            Element::combining(0, Element::invradius(20)),
+            Element::invradius(170),
         ],
         "io" => vec![
             Element::radius(-170),
-            Element::combining(0, Element::radius(-20)),
-            Element::radius(-170),
+            Element::combining(0, Element::invradius(-20)),
+            Element::invradius(-170),
         ],
         "qo" => vec![
             Element::radius(90),

@@ -1,5 +1,7 @@
 use log;
 
+use itertools::Itertools;
+
 use pest::Parser;
 
 #[derive(Parser)]
@@ -180,12 +182,12 @@ fn get_elements_for_main_figure(figure_pair: Pair<Rule>) -> Vec<Element> {
     }
 }
 
-fn find_combining_with_arg(elements: &Vec<Element>, roll_selector: i32) -> Option<usize> {
+fn find_combining_with_arg(elements: &Vec<Element>, target_roll_selector: i32) -> Option<usize> {
     let result = elements
         .iter()
         .enumerate()
         .find(|(_, elem)| match elem.elem_type {
-            ElementType::Combining { roll_selector, .. } => true,
+            ElementType::Combining { roll_selector, .. } => roll_selector == target_roll_selector,
             _ => false,
         });
     match result {
@@ -204,16 +206,29 @@ fn insert_combining_rolls(
     // Y => 1
     // Z => 2
     // W => 0
-    let contains_combining = find_combining_with_arg(&elements, position);
-
-    if let Some(idx) = contains_combining {
+    if let Some(idx) = find_combining_with_arg(&elements, position) {
+        // Convert the combining marker into its base element
+        let base_element = Element {
+            elem_type: match elements[idx].elem_type {
+                ElementType::Combining { base_type, .. } => base_type.into(),
+                _ => unreachable!(),
+            },
+            ..elements[idx].clone()
+        };
         if let Some(roll_set) = roll_set_opt {
+            // Need to dulicate the base_element for the number of roll elements
+            //  and apply their aux_angle & roll_type
+            let applied_rolls = roll_set.iter().map(|roll_elem| Element {
+                aux_angle: roll_elem.aux_angle,
+                roll_type: roll_elem.roll_type,
+                ..base_element.clone()
+            });
             // Insert the roll set & append
-            elements.splice(idx..idx + 1, roll_set);
+            elements.splice(idx..idx + 1, applied_rolls);
             return None;
         } else {
-            // Remove the combining marker & append
-            elements.remove(idx);
+            // Just put the base_element in place of the marker
+            elements[idx] = base_element;
             return roll_set_opt;
         }
     } else {
@@ -313,7 +328,7 @@ fn invert_figure_elements(elements: &mut Vec<Element>, from_idx: usize) {
                 if elem.matching >= 0 {
                     elem.main_angle = -elem.main_angle;
                 }
-                elem.attitude = Attitude::get_inverted(elem.attitude);
+                //elem.attitude = Attitude::get_inverted(elem.attitude);
             }
             ElementType::Turn => {
                 elem.attitude = Attitude::get_inverted(elem.attitude);
@@ -470,6 +485,48 @@ fn parse_figure(olan_figure: Pair<Rule>) -> Figure {
 
     return figure;
 }
+
+fn is_plain_radius(elem: &Element) -> bool {
+    elem.elem_type == ElementType::Radius && elem.roll_type == RollType::None
+}
+
+fn combine_contiguous_radii(figure: &mut Figure) {
+    let batched_elements = figure
+        .elements
+        .iter()
+        .peekable()
+        .batching(|iter| {
+            match iter.next() {
+                None => None,
+                Some(elem) => {
+                    if !is_plain_radius(elem) {
+                        Some(elem.clone())
+                    } else {
+                        let mut total_angle = elem.main_angle;
+                        while let Some(next_elem_peek) = iter.clone().peek() {
+                            if !is_plain_radius(next_elem_peek) {
+                                break;
+                            }
+                            if elem.matching == next_elem_peek.matching
+                                && elem.main_angle.signum() == next_elem_peek.main_angle.signum()
+                            {
+                                // Consume the element
+                                let next_elem = iter.next().unwrap();
+                                total_angle += next_elem.main_angle
+                            }
+                        }
+                        Some(Element {
+                            main_angle: total_angle,
+                            ..elem.clone()
+                        })
+                    }
+                }
+            }
+        })
+        .collect();
+    figure.elements = batched_elements
+}
+
 pub fn parse_sequence(olan_string: String) -> Sequence {
     let mut sequence = Sequence::new();
 
@@ -487,11 +544,13 @@ pub fn parse_sequence(olan_string: String) -> Sequence {
             _ => {}
         }
     }
-    // Remove remaining doubled lines
     for figure in &mut sequence.figures {
+        // Remove doubled lines
         figure
             .elements
             .dedup_by(|a, b| a.elem_type == ElementType::Line && a == b);
+
+        combine_contiguous_radii(figure);
     }
     // With sequence parsed, need to check for:
     // - Inverted flight continuity

@@ -38,6 +38,16 @@ pub enum ElementType {
     },
 }
 
+impl From<CombinableElementType> for ElementType {
+    fn from(combinable_type: CombinableElementType) -> Self {
+        match combinable_type {
+            CombinableElementType::Line => Self::Line,
+            CombinableElementType::Radius => Self::Radius,
+            CombinableElementType::Turn => Self::Turn,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Attitude {
     Normal,
@@ -113,6 +123,22 @@ impl Element {
 
     pub fn radius(angle: i16) -> Element {
         Element {
+            main_angle: angle,
+            ..Element::new(ElementType::Radius)
+        }
+    }
+
+    pub fn invradius(angle: i16) -> Element {
+        Element {
+            attitude: Attitude::Inverted,
+            main_angle: angle,
+            ..Element::new(ElementType::Radius)
+        }
+    }
+
+    pub fn keradius(angle: i16) -> Element {
+        Element {
+            attitude: Attitude::KnifeEdge,
             main_angle: angle,
             ..Element::new(ElementType::Radius)
         }

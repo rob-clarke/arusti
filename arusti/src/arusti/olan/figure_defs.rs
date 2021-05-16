@@ -1,9 +1,12 @@
 use crate::olan::parser::Rule;
-use crate::types::{Element, ElementType};
+use crate::types::{Element, ElementType, RollType};
 use pest::iterators::Pair;
 
 pub fn get_elements_for_single_line(figure_pair: Pair<Rule>) -> Vec<Element> {
     match figure_pair.as_str() {
+        "0" => vec![
+            Element::line(0),
+            ],
         "d" => vec![
             Element::radius(45),
             Element::line(45),
@@ -118,8 +121,16 @@ pub fn get_elements_for_twin_line(figure_pair: Pair<Rule>) -> Vec<Element> {
 
 pub fn get_elements_for_loop_figure(figure_pair: Pair<Rule>) -> Vec<Element> {
     match figure_pair.as_str() {
-        "a" => vec![Element::radius(-180)],
-        "m" => vec![Element::radius(180)],
+        "a" => vec![
+            Element::combining(-1, Element::line(0)),
+            Element::radius(-180),
+            Element::combining(0, Element::invline(0)),
+            ],
+        "m" => vec![
+            Element::combining(-1, Element::line(0)),
+            Element::radius(180),
+            Element::combining(0, Element::invline(0)),
+            ],
         "o" => vec![
             Element::radius(170),
             Element::combining(0, Element::invradius(20)),
@@ -301,6 +312,7 @@ pub fn get_elements_for_loop_line_combo(figure_pair: Pair<Rule>) -> Vec<Element>
             Element::radius(-270),
         ],
         "q" => vec![
+            Element::combining(-1, Element::line(0)),
             Element::radius(315),
             Element::line(-45),
             Element::combining(0, Element::line(-45)),
@@ -917,5 +929,47 @@ pub fn get_elements_for_rolling_turn(figure_pair: Pair<Rule>) -> Vec<Element> {
     return elements;
 }
 pub fn get_elements_for_non_aresti(figure_pair: Pair<Rule>) -> Vec<Element> {
-    Vec::<Element>::new()
+    match figure_pair.as_str() {
+        "oj" => vec![
+            Element::radius(90),
+            Element {
+                aux_angle: 90,
+                roll_type: RollType::Standard,
+                ..Element::line(90)
+            },
+            Element::radius(80),
+            Element::combining(0, Element::invradius(20)),
+            Element::invradius(170),
+        ],
+        "ioj" => vec![
+            Element::radius(170),
+            Element::combining(0, Element::invradius(20)),
+            Element::invradius(80),
+            Element {
+                aux_angle: 90,
+                roll_type: RollType::Standard,
+                ..Element::line(-90)
+            },
+            Element::radius(90),
+        ],
+        "mj" => vec![
+            Element::radius(90),
+            Element {
+                aux_angle: 90,
+                roll_type: RollType::Standard,
+                ..Element::line(90)
+            },
+            Element::radius(90),
+        ],
+        "aj" => vec![
+            Element::radius(-90),
+            Element {
+                aux_angle: 90,
+                roll_type: RollType::Standard,
+                ..Element::line(-90)
+            },
+            Element::radius(-90),
+        ],
+        _ => unreachable!(),
+    }
 }

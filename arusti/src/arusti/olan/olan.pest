@@ -29,8 +29,10 @@ roll_set = {
 inner_roll_set = { "(" ~ roll_set ~ ")" }
 
 single_line = {
-    "i"? ~
-    ( "d" | "v" | "z" )
+    (
+        "i"? ~ ( "d" | "v" | "z" )
+        | "0"
+        )
     ~ !ASCII_ALPHA
     }
 
@@ -108,6 +110,10 @@ non_aresti = {
     ~ !ASCII_ALPHA
     }
 
+knifeedge_mark = {
+    "!"
+    }
+
 main_figure = {
     single_line
     | twin_line
@@ -122,12 +128,13 @@ main_figure = {
     }
 
 rolling_figure = {
-    roll_set | "0"
+    roll_set
     }
 
 named_figure = {
     roll_set?
     ~ main_figure
+    ~ knifeedge_mark*
     ~ inner_roll_set*
     ~ ( intra_line_extension | roll_set? )
     }

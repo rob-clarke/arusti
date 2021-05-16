@@ -247,6 +247,8 @@ fn get_elements_for_named_figure(figure_pair: Pair<Rule>) -> Vec<Element> {
     let mut inner_roll_set2_opt: Option<Vec<Element>> = None;
     let mut exit_roll_set_opt: Option<Vec<Element>> = None;
 
+    let mut figure_is_knifeedge = false;
+
     if current_pair.as_rule() == Rule::roll_set {
         entry_roll_set_opt = Some(get_elements_for_roll_set(current_pair));
         current_pair = inner_pairs.next().unwrap();
@@ -270,6 +272,9 @@ fn get_elements_for_named_figure(figure_pair: Pair<Rule>) -> Vec<Element> {
             Rule::roll_set => {
                 exit_roll_set_opt = Some(get_elements_for_roll_set(current_pair));
             }
+            Rule::knifeedge_mark => {
+                figure_is_knifeedge = true;
+            }
             _ => {
                 unreachable!();
             }
@@ -277,35 +282,60 @@ fn get_elements_for_named_figure(figure_pair: Pair<Rule>) -> Vec<Element> {
     }
 
     // Deal with roll set before figure
-    let remaining_entry_rolls_opt =
+    let _remaining_entry_rolls_opt =
         insert_combining_rolls(&mut main_figure_elements, -1, entry_roll_set_opt);
+    /*
     if let Some(mut entry_rolls) = remaining_entry_rolls_opt {
         elements.append(&mut entry_rolls);
     }
+    */
     // Deal with inner roll sets
     insert_combining_rolls(&mut main_figure_elements, 1, inner_roll_set_opt);
     insert_combining_rolls(&mut main_figure_elements, 2, inner_roll_set2_opt);
 
     // Deal with roll set after figure
-    let remaining_exit_rolls_opt =
+    let _remaining_exit_rolls_opt =
         insert_combining_rolls(&mut main_figure_elements, 0, exit_roll_set_opt);
+
+    if figure_is_knifeedge {
+        elements.push(Element {
+            aux_angle: 90,
+            roll_type: RollType::Standard,
+            ..Element::line(0)
+        });
+        main_figure_elements.iter_mut().for_each(|elem| {
+            Element {
+                attitude: Attitude::KnifeEdge,
+                ..elem.clone()
+            };
+        });
+    }
+
+    // Insert the main figure elements
     elements.append(&mut main_figure_elements);
 
+    if figure_is_knifeedge {
+        elements.push(Element {
+            attitude: Attitude::KnifeEdge,
+            aux_angle: -90,
+            roll_type: RollType::Standard,
+            ..Element::line(0)
+        })
+    }
+
+    /*
     if let Some(mut exit_rolls) = remaining_exit_rolls_opt {
         elements.append(&mut exit_rolls);
     }
+    */
 
     return elements;
 }
 
 fn get_elements_for_rolling_figure(figure_pair: Pair<Rule>) -> Vec<Element> {
     let mut inner_pairs = figure_pair.into_inner();
-    if let Some(roll_set_pair) = inner_pairs.next() {
-        get_elements_for_roll_set(roll_set_pair)
-    } else {
-        // Rolling figure is actually just a line
-        Vec::<Element>::new()
-    }
+    let inner_pair = inner_pairs.next().unwrap();
+    get_elements_for_roll_set(inner_pair)
 }
 
 fn get_transition_attitude(line_extension: &Pair<Rule>) -> Attitude {
@@ -402,9 +432,17 @@ fn parse_figure(olan_figure: Pair<Rule>) -> Figure {
                     90 | 270 => {}
                     0 | 180 => {
                         if (element.aux_angle % 360) != 0 {
-                            inverted_by_roll = !inverted_by_roll;
-                            current_attitude = Attitude::get_inverted(current_attitude);
-                            current_pitch = (current_pitch + 180 + 360) % 360;
+                            if (element.aux_angle % 180) == 0 {
+                                inverted_by_roll = !inverted_by_roll;
+                                current_attitude = Attitude::get_inverted(current_attitude);
+                                current_pitch = (current_pitch + 180 + 360) % 360;
+                                }
+                            else if current_attitude != Attitude::KnifeEdge {
+                                current_attitude = Attitude::KnifeEdge;
+                                }
+                            else {
+                                current_attitude = Attitude::Normal;
+                                }
                         }
                     }
                     45 | 225 => {
